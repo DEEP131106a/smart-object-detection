@@ -1,3 +1,15 @@
+---
+title: Smart Object Detection and AI Image Description System
+emoji: 👁️
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.40.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # Smart Object Detection and AI Image Description System
 
 An end-to-end, interactive Computer Vision and Multimodal Generative AI web application built with **Streamlit**, **Ultralytics YOLOv8**, **OpenCV**, and **Vision-Language Generative AI** (Azure AI Foundry, OpenAI, Google Gemini, and a Local Contextual Synthesizer).
