@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment & credentials
+.env
+.venv/
+venv/
+ENV/
+
+# Ultralytics runtime artifacts
+.ultralytics/
+runs/
+
+# Streamlit runtime
+.streamlit/secrets.toml
+
+# Outputs (keep folder structure)
+outputs/*
+!outputs/.gitkeep
