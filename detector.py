@@ -270,3 +270,63 @@ class ObjectDetector:
         # Convert back to PIL RGB
         annotated_rgb = cv_img[:, :, ::-1]
         return Image.fromarray(annotated_rgb)
+
+
+if __name__ == "__main__":
+    import sys
+    print("=" * 60)
+    print("🔍 YOLOv8 Standalone Object Detector Test")
+    print("=" * 60)
+
+    # 1. Initialize detector
+    print("1. Loading YOLOv8 nano model (yolov8n.pt)...")
+    detector = ObjectDetector(model_name="yolov8n.pt")
+    print("   ✓ Model successfully loaded into memory!")
+
+    # 2. Determine target image
+    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+        image_path = sys.argv[1]
+        print(f"2. Loading input image: {image_path}")
+        test_img = Image.open(image_path).convert("RGB")
+    else:
+        print("2. Generating test visual scene...")
+        from PIL import ImageDraw
+        test_img = Image.new("RGB", (800, 600), color=(240, 244, 248))
+        draw = ImageDraw.Draw(test_img)
+        # Background elements
+        draw.rectangle([0, 350, 800, 600], fill=(70, 70, 70))
+        # Car representation
+        draw.rectangle([180, 320, 500, 480], fill=(220, 40, 40))
+        draw.rectangle([230, 260, 450, 320], fill=(160, 200, 240))
+        draw.ellipse([210, 450, 270, 510], fill=(20, 20, 20))
+        draw.ellipse([410, 450, 470, 510], fill=(20, 20, 20))
+        # Person representation
+        draw.ellipse([580, 280, 620, 320], fill=(240, 200, 160))
+        draw.rectangle([580, 320, 620, 440], fill=(40, 80, 200))
+
+    # 3. Execute detection
+    print("3. Executing inference (Confidence: 0.25, IoU: 0.45)...")
+    result = detector.detect(test_img, conf_threshold=0.25, iou_threshold=0.45)
+
+    print(f"   ✓ Inference completed in {result['inference_time_ms']:.1f} ms!")
+    summary = result["summary"]
+    print(f"   ✓ Total objects detected: {summary['total_count']}")
+    print(f"   ✓ Unique categories: {summary['unique_categories']}")
+    print(f"   ✓ Average confidence: {summary['average_confidence']*100:.1f}%\n")
+
+    if result["detections"]:
+        print("4. Detection Details:")
+        for idx, det in enumerate(result["detections"], 1):
+            print(f"   [{idx}] {det['label'].capitalize()} - {det['confidence']*100:.1f}% | Box: {det['box']}")
+    else:
+        print("   (No objects met the 0.25 confidence threshold)")
+
+    # 4. Save output
+    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "outputs")
+    os.makedirs(output_dir, exist_ok=True)
+    out_file = os.path.join(output_dir, "standalone_detection_test.jpg")
+    result["annotated_image"].save(out_file)
+    print(f"\n5. Annotated image saved to: {out_file}")
+    print("=" * 60)
+    print("✨ Standalone test completed successfully!")
+    print("=" * 60)
